@@ -5,4 +5,5 @@ About AmandaDB:
 <ol>
 <li>On my machine (Lenovo G50 Core i7 2.4GHz, 16GB RAM, 64-bit, Windows 10), write time is 0.0394ms and 7.0822ms write time and read time respectively, per 256 byte record.  I'm really interested in getting up to 8k reading in < 5ms.  Right now, I'm at something asonine like 30ms for reads, so don't be confused - it'll be a while.</li>
 <li>Works with the underlying file system.  This doesn't control disk access, like some DBMS's.  Storage maps to files.</li>
+<li>I'd love to have it more configurable.</li>
 </ol>
