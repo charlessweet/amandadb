@@ -494,23 +494,28 @@ Cras euismod elit nisi, sit amet bibendum eros dapibus id. Proin ullamcorper sol
             Assert.AreEqual(1000, locations.Count, "Expected the number of entries for which we have locations to match the number of entries saved.");
 
             elapsed = 0;
+            double elapsedRetrieve = 0;
             int recordCount = 0;
             //new instance and reload folder
             t = new AmandaEngine<TestRecord<Guid>, Guid>();
             t.CreateOrUseAmanda(amandaParentFolder);
+            Stopwatch sw = new Stopwatch();
             foreach (var rec in singleRecordList)
             {
                 s.Reset();
                 s.Start();
-                var matches = t.GetMatchingEntries(rec.Key);
+                var matches = t.HasRecord(rec.Key);
                 s.Stop();
-                TestRecord<Guid> actual = matches.FirstOrDefault();
-                Assert.AreEqual(rec.Key, actual.Key);
-                Assert.AreEqual(rec.PayLoad, actual.PayLoad);
+                Assert.IsTrue(matches);
+                sw.Start();
+                var r2 = t.GetMatchingEntries(rec.Key);
+                sw.Stop();
+                elapsedRetrieve += sw.ElapsedMilliseconds;
                 elapsed += s.ElapsedMilliseconds;
                 recordCount++;
             }
-            Trace.WriteLine(elapsed / 1000f + "ms", "Time To Retrieve Record");
+            Trace.WriteLine(elapsed / 1000f + "ms", "Time To Find Record");
+            Trace.WriteLine(elapsedRetrieve / 1000f + "ms", "Time To Retrieve Record");
         }
 
         [TestMethod]

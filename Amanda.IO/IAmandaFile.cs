@@ -11,5 +11,6 @@ namespace Amanda.IO
         Stream OpenRead();
         Stream OpenWrite();
         void Truncate();
+        long Size { get; set; }
     }
 }

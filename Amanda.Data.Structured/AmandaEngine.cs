@@ -128,6 +128,11 @@ namespace Amanda.Data.Structured
             return amandaView;
         }
 
+        public bool HasRecord(TKeyField key)
+        {
+            return _defaultIndex.FindRecord(key).Count > 0;
+        }
+
         public List<TRecordType> GetMatchingEntries(TKeyField key)
         {
             var records = _defaultIndex.FindRecord(key);
