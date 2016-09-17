@@ -1,5 +1,6 @@
-*.[dll]
-*.[pdb]
+*.user
+*.dll
+*.pdb
 .vs/*
 bin/*
 obj/*

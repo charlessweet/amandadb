@@ -1,4 +1,5 @@
 ﻿using Amanda.IO;
+using Amanda.IO.MemoryOnly;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,9 +12,19 @@ namespace Amanda.Data.Structured
 {
     public class AmandaDb<TRecordType>
     {
+        //folder structure on disk is as follows:
+        //  .amanda - root folder
+        //      .data - data files
+        //      .keyFieldIndex - index based on key fields
+        //      .timeBasedIndex - date based index
         private const string DEFAULT_DATA_FOLDER = ".data";
+
         protected FileSystemAccess<TRecordType> _fileSystemAccess;
+        protected FileSystemAccess<TRecordType> _persistentAccess;
+
         protected Amanda.IO.IAmandaDirectory _workingFolder;
+        protected Amanda.IO.IAmandaDirectory _persistFolder;
+
         public bool IsInitialized
         {
             get;
@@ -34,10 +45,19 @@ namespace Amanda.Data.Structured
         {
             if(rootFolder ==null || !rootFolder.Exists)
                 throw new IOException("The specified database parent directory is null or does not exist.");
-            _workingFolder = rootFolder.CreateOrUseSubdirectory(DEFAULT_DATA_FOLDER);
-
+            _workingFolder = new MemoryOnlyDirectory(DEFAULT_DATA_FOLDER);
             _fileSystemAccess = new FileSystemAccess<TRecordType>();
             _fileSystemAccess.CreateOrUseFileAccess(_workingFolder);
+        }
+
+        /// <summary>
+        /// Pre load the cache.
+        /// </summary>
+        public void Synchronize(Amanda.IO.IAmandaDirectory rootFolder)
+        {
+            _persistFolder = rootFolder.CreateOrUseSubdirectory(DEFAULT_DATA_FOLDER);
+            _persistentAccess = new FileSystemAccess<TRecordType>();
+            _persistentAccess.CreateOrUseFileAccess(_workingFolder);            
         }
 
         public Dictionary<TRecordType, RowLocation> AddRecords(List<TRecordType> stocks)
