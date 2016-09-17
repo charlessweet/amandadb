@@ -26,6 +26,14 @@ namespace Amanda.IO.MemoryOnly
             protected set;
         }
 
+        public long Size
+        {
+            get
+            {
+                return _fileMemory.Length;
+            }
+        }
+
         public string GetNameWithoutExtension()
         {
             return Path.GetFileNameWithoutExtension(_relativeFileName);

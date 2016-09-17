@@ -14,6 +14,15 @@ namespace Amanda.IO
         string FilePath { get; set; }
         public bool Exists { get { return File.Exists(FilePath); } }
 
+        public long Size
+        {
+            get
+            {
+                var fileInfo = new FileInfo(FilePath);
+                return fileInfo.Length;
+            }
+        }
+
         public AmandaFile(string filePath)
         {
             FilePath = filePath;
