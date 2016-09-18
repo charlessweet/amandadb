@@ -45,10 +45,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AmandaDirectory.cs" />
-    <Compile Include="AmandaFileAccess.cs" />
-    <Compile Include="AmandaRowLocation.cs" />
-    <Compile Include="AmandaFile.cs" />
+    <Compile Include="PhysicalDirectory.cs" />
+    <Compile Include="FileSystemAccess.cs" />
+    <Compile Include="RowLocation.cs" />
+    <Compile Include="PhysicalFile.cs" />
     <Compile Include="IAmandaDirectory.cs" />
     <Compile Include="IAmandaFile.cs" />
     <Compile Include="LockFile.cs" />
