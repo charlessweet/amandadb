@@ -512,6 +512,8 @@ Cras euismod elit nisi, sit amet bibendum eros dapibus id. Proin ullamcorper sol
                 sw.Stop();
                 elapsedRetrieve += sw.ElapsedMilliseconds;
                 elapsed += s.ElapsedMilliseconds;
+                sw.Reset();
+                s.Reset();
                 recordCount++;
             }
             Trace.WriteLine(elapsed / 1000f + "ms", "Time To Find Record");
