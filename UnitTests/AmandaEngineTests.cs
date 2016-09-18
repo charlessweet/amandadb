@@ -45,7 +45,7 @@ Cras euismod elit nisi, sit amet bibendum eros dapibus id. Proin ullamcorper sol
         {
             AmandaEngine<TestRecord<Guid>, Guid> sqda = new AmandaEngine<TestRecord<Guid>, Guid>();
 
-            var amandaParentFolder = new Amanda.IO.AmandaDirectory(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().FullName) + @"\" + Guid.NewGuid().ToString());
+            var amandaParentFolder = new Amanda.IO.PhysicalDirectory(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().FullName) + @"\" + Guid.NewGuid().ToString());
             try
             {
                 //change to a new parent folder we know is invalid
@@ -62,7 +62,7 @@ Cras euismod elit nisi, sit amet bibendum eros dapibus id. Proin ullamcorper sol
         {
             AmandaEngine<TestRecord<Guid>, Guid> t = new AmandaEngine<TestRecord<Guid>, Guid>();
             
-            var amandaParentFolder = new Amanda.IO.AmandaDirectory(@"c:\Windows\System32\FAKE");
+            var amandaParentFolder = new Amanda.IO.PhysicalDirectory(@"c:\Windows\System32\FAKE");
             try
             {
                 //try to create folder on invalid drive
@@ -95,7 +95,7 @@ Cras euismod elit nisi, sit amet bibendum eros dapibus id. Proin ullamcorper sol
             System.IO.Directory.CreateDirectory(parentFolder);
             Trace.WriteLine(parentFolder, "Root Folder");
             AmandaEngine<TestRecord<Guid>, Guid> t = new AmandaEngine<TestRecord<Guid>, Guid>();
-            var amandaParentFolder = new AmandaDirectory(parentFolder);
+            var amandaParentFolder = new PhysicalDirectory(parentFolder);
             var amandaFolder = t.CreateOrUseAmanda(amandaParentFolder);
             List<TestRecord<Guid>> toSave= new List<TestRecord<Guid>>();
             for(int i = 0; i < 100; i++)
@@ -113,7 +113,7 @@ Cras euismod elit nisi, sit amet bibendum eros dapibus id. Proin ullamcorper sol
             Trace.WriteLine((double)s.ElapsedMilliseconds/(double)100 + "ms", "Write Time With Disk Per Record");
 
             t = new AmandaEngine<TestRecord<Guid>, Guid>();
-            amandaParentFolder = new AmandaDirectory(parentFolder);
+            amandaParentFolder = new PhysicalDirectory(parentFolder);
             amandaFolder = t.CreateOrUseAmanda(amandaParentFolder);
 
             //now add another one
@@ -145,7 +145,7 @@ Cras euismod elit nisi, sit amet bibendum eros dapibus id. Proin ullamcorper sol
             System.IO.Directory.CreateDirectory(parentFolder);
             Trace.WriteLine(parentFolder, "Root Folder");
             List<Task> tasks = new List<Task>();
-            var amandaParentFolder = new AmandaDirectory(parentFolder);
+            var amandaParentFolder = new PhysicalDirectory(parentFolder);
             Stopwatch sw = new Stopwatch();
             double numInstances = 38;
             double numRecords = 1;

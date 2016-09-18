@@ -46,7 +46,7 @@ namespace Amanda.Data.Structured
         {
             if(rootFolder ==null || !rootFolder.Exists)
                 throw new IOException("The specified database parent directory is null or does not exist.");
-            _workingFolder = new MemoryOnlyDirectory(DEFAULT_DATA_FOLDER);
+            _workingFolder = rootFolder.CreateOrUseSubdirectory(DEFAULT_DATA_FOLDER);
             _fileSystemAccess = new FileSystemAccess<TRecordType>();
             _fileSystemAccess.CreateOrUseFileAccess(_workingFolder);
         }
