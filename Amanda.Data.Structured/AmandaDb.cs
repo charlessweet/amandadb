@@ -17,6 +17,7 @@ namespace Amanda.Data.Structured
         //      .data - data files
         //      .keyFieldIndex - index based on key fields
         //      .timeBasedIndex - date based index
+        //      .journal - the journal
         private const string DEFAULT_DATA_FOLDER = ".data";
 
         protected FileSystemAccess<TRecordType> _fileSystemAccess;
@@ -60,11 +61,11 @@ namespace Amanda.Data.Structured
             _persistentAccess.CreateOrUseFileAccess(_workingFolder);            
         }
 
-        public Dictionary<TRecordType, RowLocation> AddRecords(List<TRecordType> stocks)
+        public Dictionary<TRecordType, RowLocation> AddRecords(List<TRecordType> records)
         {
             using (LockFile lf = new LockFile("append_to_newest", _workingFolder))
             {
-                return _fileSystemAccess.AppendToNewestFile(stocks);
+                return _fileSystemAccess.AppendToNewestFile(records);
             }
         }
 
