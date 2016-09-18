@@ -4,7 +4,7 @@ C# local database dreaming of big things.  Seriously, though, this database has 
 Update (9/17/2016):
 Moved all data access to in-memory only, thus reducing the online write and read times significantly.  From ~7ms read <1ms read, and from ~0.03ms to <0.005ms write.  This creates more work.  Now I need to work out a journaling and synchronization mechanism to persist the data and harden against things like power outages, but I've already got the necessary interfaces to interact with the file system to make this happen.  Also, I'll have to figure out what to load into memory on startup (maybe just the indexes?).
 
-The times are still with pretty small records.  The 8k records are taking a while to load because they're JSON and moving to the correct positions in the files are taking a while.
+The times are still with pretty small records.  The 8k records are taking a while to load (15.24ms) because they're JSON and moving to the correct positions in the files are taking a while.  Standardizing serialized record sizes will allow me to pre-calculate the position of the data in the file, and move to the position in the stream without deserializing records.
 
 About AmandaDB:
 <ol>
