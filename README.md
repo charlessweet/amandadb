@@ -11,4 +11,5 @@ About AmandaDB:
 <li>On my machine (Lenovo G50 Core i7 2.4GHz, 16GB RAM, 64-bit, Windows 10), performance is 0.005ms and 0.753ms write time and read time respectively, per 256 byte record.  Right now, I'm at something asonine like 30ms for reads, so don't be confused - it'll be a while.</li>
 <li>Works with the underlying file system.  This doesn't control disk access, like some DBMS's.  Storage maps to files.</li>
 <li>I'd love to have it more configurable.</li>
+<li>Works with .NET Framework - anywhere this is installed, this will work.</li>
 </ol>
