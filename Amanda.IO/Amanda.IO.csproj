@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="PhysicalDirectory.cs" />
     <Compile Include="FileSystemAccess.cs" />
+    <Compile Include="RecordSerializer.cs" />
     <Compile Include="RowLocation.cs" />
     <Compile Include="PhysicalFile.cs" />
     <Compile Include="IAmandaDirectory.cs" />
