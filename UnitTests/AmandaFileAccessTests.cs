@@ -201,7 +201,7 @@ namespace AmandaStructuredStorage
             var workingFolder = new MemoryOnlyDirectory("test_path", true);
             try
             {
-                t.GetFirstRecord();
+                t.GetFirstRecordInCurrentPath();
                 Assert.Fail("Expected failure before FileSystemAccess is initialized.");
             }catch(InvalidOperationException ex)
             {
@@ -216,7 +216,7 @@ namespace AmandaStructuredStorage
             var t = new Amanda.IO.FileSystemAccess<TestRecord<Guid>>();
             var workingFolder = new MemoryOnlyDirectory("test_path", true);
             t.CreateOrUseFileAccess(workingFolder);
-            var record = t.GetFirstRecord();
+            var record = t.GetFirstRecordInCurrentPath();
             Assert.IsNull(record);
         }
         [TestMethod]
@@ -236,7 +236,7 @@ namespace AmandaStructuredStorage
                 });
             }
             t.AppendToNewestFile(trlist);
-            var record = t.GetFirstRecord();
+            var record = t.GetFirstRecordInCurrentPath();
             Assert.AreEqual(trlist.First().Key, record.Key);
             Assert.AreEqual(trlist.First().PayLoad, record.PayLoad);
         }

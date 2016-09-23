@@ -97,7 +97,10 @@ namespace Amanda.IO
                 if (value == null || value.ToString() == String.Empty)
                     return totalBytes;
                 ASCIIEncoding asc = new ASCIIEncoding();
-                byte[] bytes = asc.GetBytes(value.ToString().Substring(0, (int)STRING_MAX_SIZE));
+                string s = value.ToString();
+                if (s.Length > STRING_MAX_SIZE)
+                    s = s.Substring(0, (int)STRING_MAX_SIZE);
+                byte[] bytes = asc.GetBytes(s);
                 bytes.CopyTo(totalBytes, 0);
                 return totalBytes;
             }

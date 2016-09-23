@@ -16,13 +16,11 @@ namespace Amanda.Data.Structured
     /// 'AddReference' method.  Finally, commit or rollback all index
     /// entries made since last Commit (or load).
     /// </remarks>
-    public class AmandaIndex<TKeyField> : IAmandaIndex<TKeyField>
+    public class FileBasedIndex<TKeyField> : IAmandaIndex<TKeyField>
     {
-        protected const string DEFAULT_INDEX_NAME = ".sfsi";
+        protected const string DEFAULT_INDEX_NAME = ".ffsi";
         protected IAmandaDirectory _workingFolder;
-        FileSystemAccess<SortedDictionary<TKeyField, List<RowLocation>>> _indexFileSystem;
         protected string CurrentIndexName { get; set; }
-        protected SortedDictionary<TKeyField, List<RowLocation>> CurrentIndex { get; set; }
 
         /// <summary>
         /// Creates a new index, and sets the current index (for all subsequent
@@ -51,45 +49,25 @@ namespace Amanda.Data.Structured
                 throw new IOException("The specified index parent directory is null or does not exist.");
 
             _workingFolder = parentRootFolder.CreateOrUseSubdirectory(fileSystemFriendlyIndexName);
-
-            //index folder initialization
-            _indexFileSystem = new FileSystemAccess<SortedDictionary<TKeyField, List<RowLocation>>>();
-            _indexFileSystem.CreateOrUseFileAccess(_workingFolder);
-
-            var rec = (SortedDictionary<TKeyField, List<RowLocation>>)_indexFileSystem.GetFirstRecordInCurrentPath();
-            if(rec != null)
-            {
-                CurrentIndex = rec;
-            }
-            else
-            {
-                CurrentIndex = new SortedDictionary<TKeyField, List<RowLocation>>();
-            }
+        }
+        
+        public string GetFileName(TKeyField key)
+        {
+            return key.ToString();//we'll need to sanitize these and maintain order
         }
 
         public List<RowLocation> FindRecord(TKeyField key)
         {
             var rowLocations = new List<RowLocation>();
-            if (CurrentIndex.ContainsKey(key))
+            string fileName = GetFileName(key);
+            if (_workingFolder.FileExists(fileName))
             {
-                rowLocations = CurrentIndex[key];
+                //index folder initialization
+                FileSystemAccess<RowLocation> chain = new FileSystemAccess<RowLocation>();
+                chain.CreateOrUseFileAccess(_workingFolder);
+                rowLocations.Add(chain.GetFirstRecordInFile(fileName));
             }
             return rowLocations;
-        }
-
-        public List<RowLocation> FindRecordsBetween(TKeyField lowerBounds, TKeyField upperBounds)
-        {
-            List<TKeyField> keysFound = new List<TKeyField>();
-            var comparer = Comparer<TKeyField>.Default;
-            keysFound = CurrentIndex.Keys.Where(k => comparer.Compare(k, lowerBounds) >= 0 &&
-                comparer.Compare(k, upperBounds) <= 0).ToList();
-
-            List<RowLocation> rows = new List<RowLocation>();
-            foreach(var key in keysFound)
-            {
-                rows.AddRange(CurrentIndex[key]);
-            }
-            return rows;
         }
 
         /// <summary>
@@ -100,31 +78,17 @@ namespace Amanda.Data.Structured
         {
             if (!String.IsNullOrWhiteSpace(indexName) && this.CurrentIndexName != indexName)
                 throw new InvalidOperationException("The index specified for update " + indexName + " is not the current index " + this.CurrentIndexName + ".");
-            if (!CurrentIndex.ContainsKey(key))
-            {
-                List<RowLocation> rows = new List<RowLocation>();
-                rows.Add(record);
-                CurrentIndex.Add(key, rows);
-            }
-            else
-            {
-                var rows = CurrentIndex[key];
-                rows.Add(record);
-            }
-        }
-    
-        public void Commit(string indexName = null)
-        {
-            if (!String.IsNullOrWhiteSpace(indexName) && this.CurrentIndexName != indexName)
-                throw new InvalidOperationException("The index specified for update " + indexName + " is not the current index " + this.CurrentIndexName + ".");
-            //for the current index, find a file
-            _indexFileSystem.TruncateAndOverwriteCurrentFile(this.CurrentIndex);
-        }
 
-        public void Rollback(string indexName = null)
-        {
-            if (!String.IsNullOrWhiteSpace(indexName) && this.CurrentIndexName != indexName)
-                throw new InvalidOperationException("The index specified for update " + indexName + " is not the current index " + this.CurrentIndexName + ".");
+            IAmandaFile file = null;
+            string fileName = GetFileName(key);
+            List<RowLocation> rows = new List<RowLocation>();
+            rows.Add(record);
+            FileSystemAccess<RowLocation> chain = new FileSystemAccess<RowLocation>();
+            if (!_workingFolder.FileExists(fileName))
+                file = _workingFolder.Touch(fileName);
+            else
+                file = _workingFolder.GetFile(fileName);
+            chain.AppendRecordsToFile(rows, file);
         }
     }
 }

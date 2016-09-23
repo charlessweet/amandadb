@@ -46,9 +46,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AmandaEngine.cs" />
+    <Compile Include="FileBasedIndex.cs" />
     <Compile Include="AmandaView.cs" />
     <Compile Include="ChangeOptions.cs" />
     <Compile Include="FilterOption.cs" />
+    <Compile Include="IAmandaIndex.cs" />
     <Compile Include="IAmandaRecord.cs" />
     <Compile Include="InstanceSet.cs" />
     <Compile Include="IViewFilter.cs" />

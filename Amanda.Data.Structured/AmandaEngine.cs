@@ -13,8 +13,8 @@ namespace Amanda.Data.Structured
 {
     public class AmandaEngine<TRecordType,TKeyField> where TRecordType :IAmandaRecord<TKeyField>
     {
-        AmandaIndex<TKeyField> _defaultIndex;
-        AmandaIndex<DateTime> _timeIndex;
+        IAmandaIndex<TKeyField> _defaultIndex;
+        IAmandaIndex<DateTime> _timeIndex;
         AmandaDb<TRecordType> _database;
         private Amanda.IO.IAmandaDirectory _amandaFolder;
         public bool IsInitialized
@@ -51,10 +51,10 @@ namespace Amanda.Data.Structured
             _amandaFolder = parentRootFolder.CreateOrUseSubdirectory(".amanda");
 
             //create the default index
-            _defaultIndex = new AmandaIndex<TKeyField>();
+            _defaultIndex = new FileBasedIndex<TKeyField>();
             _defaultIndex.CreateOrUseIndex(_amandaFolder, ".keyFieldIndex");
 
-            _timeIndex = new AmandaIndex<DateTime>();
+            _timeIndex = new FileBasedIndex<DateTime>();
             _timeIndex.CreateOrUseIndex(_amandaFolder, ".timeBasedIndex");
 
             //create the database
@@ -84,15 +84,11 @@ namespace Amanda.Data.Structured
                         _defaultIndex.AddReference(rec.Key.Key, rec.Value);
                         _timeIndex.AddReference(DateTime.UtcNow, rec.Value);
                     }
-                    _defaultIndex.Commit();
-                    _timeIndex.Commit();
                     return inserted;
                 }
             }
             catch (Exception)
             {
-                _defaultIndex.Rollback();
-                _timeIndex.Rollback();
                     throw;
                 //throw new IOException("Failed to store values.  Please verify that the current user has permission to the folder.", ex);
             }
@@ -104,11 +100,13 @@ namespace Amanda.Data.Structured
         public List<TRecordType> GetEntriesBetweenDates(DateTime startDateUtc, DateTime endDateUtc)
         {
             List<TRecordType> records = new List<TRecordType>();
+            /*
             List<RowLocation> locations = _timeIndex.FindRecordsBetween(startDateUtc, endDateUtc);
             foreach (var location in locations)
             {
                 records.Add(_database.GetRecordsAtLocation(location).First());
             }
+            */
             return records;
         }
 
@@ -146,11 +144,13 @@ namespace Amanda.Data.Structured
         public List<TRecordType> GetRecordsInRange(TKeyField lowerBounds, TKeyField upperBounds)
         {
             List<TRecordType> records = new List<TRecordType>();
+            /*
             List<RowLocation> locations = _defaultIndex.FindRecordsBetween(lowerBounds, upperBounds);
             foreach(var location in locations)
             {
                 records.Add(_database.GetRecordsAtLocation(location).First());
             }
+            */
             return records;
         }
     }
