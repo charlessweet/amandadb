@@ -6,9 +6,12 @@ Moved all data access to in-memory only, thus reducing the online write and read
 
 The times are still with pretty small records.  The 8k records are taking a while to load (15.24ms) because they're JSON and moving to the correct positions in the files are taking a while.  Standardizing serialized record sizes will allow me to pre-calculate the position of the data in the file, and move to the position in the stream without deserializing records.
 
+Update (9/22/2016)
+Changed record storage format to binary (got rid of JSON storage).  My goal was to have uniform record sizes so I can identify locations by math instead of seeking.  This has allowed me to reduce the access times even with 8k records down to 0ms (smaller than my timers can count).  Now, 8k records are loading in 0ms, basically all writes and reads are 0ms.
+
 About AmandaDB:
 <ol>
-<li>On my machine (Lenovo G50 Core i7 2.4GHz, 16GB RAM, 64-bit, Windows 10), performance is 0.005ms and 0.753ms write time and read time respectively, per 256 byte record.  Right now, I'm at something asonine like 30ms for reads, so don't be confused - it'll be a while.</li>
+<li>On my machine (Lenovo G50 Core i7 2.4GHz, 16GB RAM, 64-bit, Windows 10), performance is 0ms and 0ms write time and read time respectively, per 256 byte record.  Down to 0ms writes and reads on all records.</li>
 <li>Works with the underlying file system.  This doesn't control disk access, like some DBMS's.  Storage maps to files.</li>
 <li>I'd love to have it more configurable.</li>
 <li>Works with .NET Framework - anywhere this is installed, this will work.</li>
