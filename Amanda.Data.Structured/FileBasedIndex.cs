@@ -53,7 +53,9 @@ namespace Amanda.Data.Structured
         
         public string GetFileName(TKeyField key)
         {
-            return key.ToString();//we'll need to sanitize these and maintain order
+            string origFileName = key.ToString();
+            var newName = String.Join("_", origFileName.Split(Path.GetInvalidFileNameChars(), StringSplitOptions.RemoveEmptyEntries)).TrimEnd('.');
+            return newName;//we'll need to sanitize these and maintain order
         }
 
         public List<RowLocation> FindRecord(TKeyField key)

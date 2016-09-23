@@ -90,7 +90,6 @@ Cras euismod elit nisi, sit amet bibendum eros dapibus id. Proin ullamcorper sol
         [TestCategory("Amanda Structured Storage")]
         public void AmandaEngine_RetainsDataAcrossInitializations()
         {
-            Assert.Inconclusive("Broke this functionality temporarily.");
             Guid root = Guid.NewGuid();
             string parentFolder = Environment.CurrentDirectory + "\\testing";
             System.IO.Directory.CreateDirectory(parentFolder);
@@ -526,7 +525,6 @@ Cras euismod elit nisi, sit amet bibendum eros dapibus id. Proin ullamcorper sol
         [TestCategory("Amanda Structured Storage")]
         public void AmandaEngine_StoreAndRetrieve1KRecordsFromExistingData()
         {
-            Assert.Inconclusive("This is not a valid test for in-memory only access.");
             AmandaEngine<TestRecord<Guid>, Guid> t = new AmandaEngine<TestRecord<Guid>, Guid>();
             string parentFolder = Environment.CurrentDirectory + "\\testing-3";
             var amandaParentFolder = new MemoryOnlyDirectory(parentFolder);
