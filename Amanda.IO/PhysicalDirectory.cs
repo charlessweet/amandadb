@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace Amanda.IO
 {
-    public class AmandaDirectory : IAmandaDirectory
+    public class PhysicalDirectory : IAmandaDirectory
     {
         public const int MAX_FILE_ACCESS_ATTEMPTS = 200;
         protected DirectoryInfo _directoryInfo; 
-        public AmandaDirectory(string directory)
+        public PhysicalDirectory(string directory)
         {
             try
             {
@@ -52,7 +52,7 @@ namespace Amanda.IO
         public IAmandaDirectory CreateOrUseSubdirectory(string relativePath)
         {
             string subPath = System.IO.Path.Combine(this.Path, relativePath);
-            Amanda.IO.AmandaDirectory subDirectory = new AmandaDirectory(subPath);
+            Amanda.IO.PhysicalDirectory subDirectory = new PhysicalDirectory(subPath);
             if (!subDirectory.Exists)
             {
                 subDirectory.Create();
@@ -72,13 +72,13 @@ namespace Amanda.IO
             var files = _directoryInfo.GetFiles(filter);
             if (files.Count() == 0)
                 return null;
-            return new AmandaFile(files.OrderByDescending(f => f.Name).Last().FullName);
+            return new PhysicalFile(files.OrderByDescending(f => f.Name).Last().FullName);
         }
 
         public IAmandaFile CreateNewFile(string relativeFileName)
         {
             string newName = CreateFullyQualifiedFileNameFromRelative(relativeFileName);
-            return new AmandaFile(newName);
+            return new PhysicalFile(newName);
         }
 
         public void MergeFileIntoExisting(string source, string destination)
@@ -99,7 +99,7 @@ namespace Amanda.IO
         public IAmandaFile GetFile(string relativeFileName)
         {
             string newName = CreateFullyQualifiedFileNameFromRelative(relativeFileName);
-            return new AmandaFile(newName);
+            return new PhysicalFile(newName);
         }
 
         public IAmandaFile Touch(string relativeFileName)

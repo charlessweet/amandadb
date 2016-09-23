@@ -1,14 +1,10 @@
 ﻿using Amanda.Data;
 using Newtonsoft.Json;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Json;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
 
 namespace Amanda.IO
 {
@@ -44,13 +40,19 @@ namespace Amanda.IO
             IsInitialized = true;
         }
 
-        public TRecordType GetFirstRecord()
+        public TRecordType GetFirstRecordInCurrentPath()
         {
             RowLocation location = new RowLocation() { Offset = 0 };
             location.CurrentPageFile = "0.adf";
             return this.ReadAtLocation(location).FirstOrDefault();
         }
 
+        public TRecordType GetFirstRecordInFile(string fileName)
+        {
+            RowLocation location = new RowLocation() { Offset = 0 };
+            location.CurrentPageFile = fileName;
+            return this.ReadAtLocation(location).FirstOrDefault();
+        }
         /// <remarks>
         /// Page file names are just numbers, in the order of creation.
         /// </remarks>
@@ -84,27 +86,10 @@ namespace Amanda.IO
 
         private int GetNextWriteLocation(IAmandaFile file)
         {
-            int position = 0;
-
-            using (Stream s = file.OpenRead())
-            {
-                s.Position = 0;
-                using (StreamReader sr = new StreamReader(s))
-                {
-                    using (JsonTextReader jr = new JsonTextReader(sr))
-                    {
-                        jr.SupportMultipleContent = true;
-                        while (true)
-                        {
-                            if (!jr.Read())
-                                break;
-                            position++;
-                            var rec = serializer.Deserialize<TRecordType>(jr);
-                        }
-                    }
-                }
-            }
-            return position;
+            RecordSerializer rs = new RecordSerializer();
+            uint serializedRecordSize = rs.CalculateRecordMaxSize(typeof(TRecordType));
+            long fileSize = file.Size;
+            return (int)(fileSize / serializedRecordSize);
         }
 
         public RowLocation TruncateAndOverwriteCurrentFile(TRecordType record)
@@ -120,11 +105,12 @@ namespace Amanda.IO
             return location;
         }
 
-        private void AppendRecordsToFile(List<TRecordType> records, IAmandaFile file)
+        public void AppendRecordsToFile(List<TRecordType> records, IAmandaFile file)
         {
             bool written = false;
             int count = 10;
             int loop = 0;
+            RecordSerializer rs = new RecordSerializer();
             do
             {
                 loop++;
@@ -133,20 +119,22 @@ namespace Amanda.IO
                     using (var stream = file.OpenWrite())
                     {
                         stream.Position = stream.Length;//position at end of stream
-                        using (StreamWriter sw = new StreamWriter(stream))
+                        foreach (var rec in records)
                         {
-                            using (JsonTextWriter jw = new JsonTextWriter(sw))
-                            {
-                                foreach (var rec in records)
-                                    serializer.Serialize(jw, rec);
-                            }
+                            byte[] recBytes = rs.SerializeRecord(typeof(TRecordType), rec);
+                            stream.Write(recBytes, 0, recBytes.Length);
                         }
                         written = true;
                     }
-                }catch(IOException)
+                }
+                catch (IOException)
                 {
                     if(loop == count)
                         throw;
+                }
+                catch(Exception ex)
+                {
+                    throw;
                 }
             } while (!written);
         }
@@ -210,31 +198,20 @@ namespace Amanda.IO
             if (!file.Exists)
                 return recordsToReturn;
             int numRecordsRead = 0;
-            int position = 0;
+            RecordSerializer rs = new RecordSerializer();
+            uint recSize = rs.CalculateRecordMaxSize(typeof(TRecordType));
+            int readPosition = (int)(recSize * location.Offset);
+
             using (var stream = file.OpenRead())
             {
-                stream.Position = 0;
-                using(StreamReader sr = new StreamReader(stream))
+                stream.Position = readPosition;
+                byte[] record = new byte[recSize];
+                while (numRecordsRead < numberOfRecordsToRead)
                 {
-                    using(JsonTextReader jr= new JsonTextReader(sr))
-                    {
-                        jr.SupportMultipleContent = true;
-                        while(position < location.Offset)
-                        {
-                            if (!jr.Read())
-                                break;
-                            serializer.Deserialize<TRecordType>(jr);//read and throw away
-                            position++;
-                        }
-                        while (numRecordsRead < numberOfRecordsToRead)
-                        {
-                            if (!jr.Read())
-                                break;
-                            TRecordType record = serializer.Deserialize<TRecordType>(jr);
-                            recordsToReturn.Add(record);
-                            numRecordsRead++;
-                        }
-                    }
+                    stream.Read(record, 0, record.Length);
+                    Object o = rs.DeserializeRecord(typeof(TRecordType), record, 0);
+                    recordsToReturn.Add((TRecordType)o);
+                    numRecordsRead++;
                 }
             }
             return recordsToReturn;

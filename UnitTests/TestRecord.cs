@@ -10,9 +10,9 @@ namespace AmandaStructuredStorage
 {
     [DataContract]
     [Serializable]
-    internal class TestRecord<KeyType> : IAmandaRecord<KeyType>
+    public class TestRecord<KeyType> : IAmandaRecord<KeyType>
     {
-        internal TestRecord()
+        public TestRecord()
         {
             Key = default(KeyType);
         }

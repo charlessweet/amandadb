@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Amanda.IO
 {
-    public class AmandaFile : IAmandaFile
+    public class PhysicalFile : IAmandaFile
     {
         protected const long BYTES_PER_GIGABYTE = 1073741824;
         protected const int MAX_FILE_ACCESS_TRIES = 200;
@@ -23,7 +23,7 @@ namespace Amanda.IO
             }
         }
 
-        public AmandaFile(string filePath)
+        public PhysicalFile(string filePath)
         {
             FilePath = filePath;
         }
