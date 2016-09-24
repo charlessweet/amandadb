@@ -419,7 +419,9 @@ Cras euismod elit nisi, sit amet bibendum eros dapibus id. Proin ullamcorper sol
             //if we have exactly as many distinct records as records, then the records must be distinct
             Assert.AreEqual(foundRecords.Distinct().Count(), foundRecords.Count);
             //if all records are in the range (24,36), then we've covered them all
-            Assert.IsTrue(foundRecords.All(f => f.Key > 24 && f.Key < 36));
+            //Assert.IsTrue(foundRecords.All(f => f.Key > 24 && f.Key < 36));
+            Assert.IsFalse(foundRecords.Any(f => f.Key <= 24 && f.Key >= 36));
+            Assert.IsNull(foundRecords.FirstOrDefault(f => f.Key <= 24 && f.Key >= 36));
         }
 
         [TestMethod]
@@ -458,6 +460,7 @@ Cras euismod elit nisi, sit amet bibendum eros dapibus id. Proin ullamcorper sol
             s.Start();
             List<TestRecord<long>> foundRecords = t.GetEntriesBetweenDates(DateTime.UtcNow.AddDays(-1), DateTime.UtcNow.AddDays(1));
             s.Stop();
+            Assert.AreEqual(allRecords.Count, foundRecords.Count);
             elapsed = s.ElapsedMilliseconds;
             Trace.WriteLine(elapsed / (double)foundRecords.Count + "ms", "Average Time To Read Record");
 

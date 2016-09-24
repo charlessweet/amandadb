@@ -132,5 +132,20 @@ namespace Amanda.IO.MemoryOnly
         {
             _files.Remove(relativeFileName);
         }
+
+        public IList<IAmandaFile> GetMatchingFiles(Func<IAmandaFile, bool> filter)
+        {
+            List<IAmandaFile> returnFiles = new List<IAmandaFile>();
+            foreach (KeyValuePair<string,IAmandaFile> fi in _files)
+            {
+                IAmandaFile ia = fi.Value;
+                if (filter(ia))
+                {
+                    returnFiles.Add(ia);
+                }
+            }
+            return returnFiles;
+        }
+
     }
 }

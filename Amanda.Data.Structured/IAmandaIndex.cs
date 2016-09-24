@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Amanda.IO;
 
 namespace Amanda.Data.Structured
@@ -8,5 +9,6 @@ namespace Amanda.Data.Structured
         void AddReference(TKeyField key, RowLocation record, string indexName = null);
         void CreateOrUseIndex(IAmandaDirectory parentRootFolder, string fileSystemFriendlyIndexName = ".sfsi");
         List<RowLocation> FindRecord(TKeyField key);
+        List<RowLocation> FindRecordsBetween(TKeyField startOfRange, TKeyField endOfRange);
     }
 }

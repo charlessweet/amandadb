@@ -14,7 +14,7 @@ namespace Amanda.Data.Structured
     public class AmandaEngine<TRecordType,TKeyField> where TRecordType :IAmandaRecord<TKeyField>
     {
         IAmandaIndex<TKeyField> _defaultIndex;
-        IAmandaIndex<DateTime> _timeIndex;
+        IAmandaIndex<long> _timeIndex;
         AmandaDb<TRecordType> _database;
         private Amanda.IO.IAmandaDirectory _amandaFolder;
         public bool IsInitialized
@@ -54,7 +54,7 @@ namespace Amanda.Data.Structured
             _defaultIndex = new FileBasedIndex<TKeyField>();
             _defaultIndex.CreateOrUseIndex(_amandaFolder, ".keyFieldIndex");
 
-            _timeIndex = new FileBasedIndex<DateTime>();
+            _timeIndex = new FileBasedIndex<long>();
             _timeIndex.CreateOrUseIndex(_amandaFolder, ".timeBasedIndex");
 
             //create the database
@@ -82,7 +82,7 @@ namespace Amanda.Data.Structured
                     foreach (var rec in inserted)
                     {
                         _defaultIndex.AddReference(rec.Key.Key, rec.Value);
-                        _timeIndex.AddReference(DateTime.UtcNow, rec.Value);
+                        _timeIndex.AddReference(DateTime.UtcNow.Ticks, rec.Value);
                     }
                     return inserted;
                 }
@@ -100,13 +100,13 @@ namespace Amanda.Data.Structured
         public List<TRecordType> GetEntriesBetweenDates(DateTime startDateUtc, DateTime endDateUtc)
         {
             List<TRecordType> records = new List<TRecordType>();
-            /*
-            List<RowLocation> locations = _timeIndex.FindRecordsBetween(startDateUtc, endDateUtc);
+            
+            List<RowLocation> locations = _timeIndex.FindRecordsBetween(startDateUtc.Ticks, endDateUtc.Ticks);
             foreach (var location in locations)
             {
                 records.Add(_database.GetRecordsAtLocation(location).First());
             }
-            */
+            
             return records;
         }
 
@@ -144,13 +144,13 @@ namespace Amanda.Data.Structured
         public List<TRecordType> GetRecordsInRange(TKeyField lowerBounds, TKeyField upperBounds)
         {
             List<TRecordType> records = new List<TRecordType>();
-            /*
+            
             List<RowLocation> locations = _defaultIndex.FindRecordsBetween(lowerBounds, upperBounds);
             foreach(var location in locations)
             {
                 records.Add(_database.GetRecordsAtLocation(location).First());
             }
-            */
+            
             return records;
         }
     }

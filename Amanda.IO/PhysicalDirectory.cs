@@ -157,5 +157,22 @@ namespace Amanda.IO
                 }
             } while (true);
         }
+
+        public IList<IAmandaFile> GetMatchingFiles(Func<IAmandaFile, bool> filter)
+        {
+            List<IAmandaFile> returnFiles = new List<IAmandaFile>();
+            var files = _directoryInfo.GetFiles();
+            if (files.Count() == 0)
+                return returnFiles;
+            foreach(FileInfo fi in files)
+            {
+                IAmandaFile ia = new PhysicalFile(fi.FullName);
+                if (filter(ia))
+                {
+                    returnFiles.Add(ia);
+                }
+            }
+            return returnFiles;
+        }
     }
 }

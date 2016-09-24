@@ -53,6 +53,14 @@ namespace Amanda.IO
             location.CurrentPageFile = fileName;
             return this.ReadAtLocation(location).FirstOrDefault();
         }
+
+        public List<TRecordType> GetAllRecordsInFile(string fileName)
+        {
+            RowLocation location = new RowLocation() { Offset = 0 };
+            location.CurrentPageFile = fileName;
+            return this.ReadAtLocation(location, Int32.MaxValue);
+        }
+        
         /// <remarks>
         /// Page file names are just numbers, in the order of creation.
         /// </remarks>
@@ -204,14 +212,15 @@ namespace Amanda.IO
 
             using (var stream = file.OpenRead())
             {
-                stream.Position = readPosition;
-                byte[] record = new byte[recSize];
-                while (numRecordsRead < numberOfRecordsToRead)
+                while (numRecordsRead < numberOfRecordsToRead && readPosition < stream.Length)
                 {
+                    stream.Position = readPosition;
+                    byte[] record = new byte[recSize];
                     stream.Read(record, 0, record.Length);
                     Object o = rs.DeserializeRecord(typeof(TRecordType), record, 0);
                     recordsToReturn.Add((TRecordType)o);
                     numRecordsRead++;
+                    readPosition += (int)recSize;
                 }
             }
             return recordsToReturn;
