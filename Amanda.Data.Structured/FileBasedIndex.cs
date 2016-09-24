@@ -60,14 +60,19 @@ namespace Amanda.Data.Structured
 
         public List<RowLocation> FindRecord(TKeyField key)
         {
-            var rowLocations = new List<RowLocation>();
             string fileName = GetFileName(key);
+            return ReadRecordsInFile(fileName);
+        }
+
+        private List<RowLocation> ReadRecordsInFile(string fileName)
+        {
+            var rowLocations = new List<RowLocation>();
             if (_workingFolder.FileExists(fileName))
             {
                 //index folder initialization
                 FileSystemAccess<RowLocation> chain = new FileSystemAccess<RowLocation>();
                 chain.CreateOrUseFileAccess(_workingFolder);
-                rowLocations.Add(chain.GetFirstRecordInFile(fileName));
+                rowLocations.AddRange(chain.GetAllRecordsInFile(fileName));
             }
             return rowLocations;
         }
@@ -91,6 +96,30 @@ namespace Amanda.Data.Structured
             else
                 file = _workingFolder.GetFile(fileName);
             chain.AppendRecordsToFile(rows, file);
+        }
+
+        public List<RowLocation> FindRecordsBetween(TKeyField lowerBounds, TKeyField upperBounds)
+        {
+            IList<string> fileNamesFound = new List<string>();
+            string lowRange = GetFileName(lowerBounds);
+            string hiRange = GetFileName(upperBounds);
+            fileNamesFound = _workingFolder.GetMatchingFiles((ai)=>
+            {
+                if(ai.GetRelativeFileName().CompareTo(lowRange) >= 0 && 
+                ai.GetRelativeFileName().CompareTo(hiRange) <= 0)
+                {
+                    return true;
+                }
+                return false;
+            }).Select(f => f.GetRelativeFileName())
+                .ToList();
+
+            List<RowLocation> rows = new List<RowLocation>();
+            foreach (var fileName in fileNamesFound)
+            {
+                rows.AddRange(ReadRecordsInFile(fileName));
+            }
+            return rows;
         }
     }
 }

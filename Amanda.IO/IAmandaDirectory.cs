@@ -1,4 +1,7 @@
-﻿namespace Amanda.IO
+﻿using System;
+using System.Collections.Generic;
+
+namespace Amanda.IO
 {
     public interface IAmandaDirectory
     {
@@ -19,5 +22,6 @@
         IAmandaFile GetNewestFile(string filter = "*");
         bool IsEmpty();
         IAmandaFile Touch(string relativeFileName);
+        IList<IAmandaFile> GetMatchingFiles(Func<IAmandaFile, bool> filter);
     }
 }
