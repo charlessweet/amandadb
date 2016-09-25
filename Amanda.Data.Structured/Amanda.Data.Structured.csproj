@@ -60,6 +60,10 @@
     <Compile Include="RandomSelectionFilter.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Amanda.IO.Journal\Amanda.IO.Journal.csproj">
+      <Project>{98084be6-aaa0-4a60-8457-03fec50e8c5e}</Project>
+      <Name>Amanda.IO.Journal</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Amanda.IO\Amanda.IO.csproj">
       <Project>{8935c97c-0c99-4b75-ad16-4ffdea225275}</Project>
       <Name>Amanda.IO</Name>

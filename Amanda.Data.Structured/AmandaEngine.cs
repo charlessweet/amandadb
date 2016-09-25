@@ -53,7 +53,10 @@ namespace Amanda.Data.Structured
             _timeIndex.CreateOrUseIndex(_amandaFolder, ".timeBasedIndex");
 
             //create the database
-            _database = new AmandaDb<TRecordType>();
+            var journal = new IO.Journal.Ledger<TRecordType>();
+            journal.CreateOrUseJournal(_amandaFolder);
+
+            _database = new AmandaDb<TRecordType>(journal);
             _database.CreateOrUseAmandaDb(_amandaFolder);
             
             this.IsInitialized = true;

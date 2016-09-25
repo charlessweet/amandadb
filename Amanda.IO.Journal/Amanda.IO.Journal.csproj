@@ -41,7 +41,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Journal.cs" />
-    <Compile Include="JournalEntry.cs" />
     <Compile Include="JournalEntryType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
