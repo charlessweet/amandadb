@@ -1,9 +1,7 @@
 ﻿using Amanda.IO;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Serialization.Json;
 using System.Linq;
 namespace Amanda.Data.Structured
 {
